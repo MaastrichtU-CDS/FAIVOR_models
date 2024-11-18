@@ -1,18 +1,24 @@
 import os
 from typing import List, Union
-from model_execution import logistic_regression
 from fastapi import FastAPI
-from oberije_2014_lung_survival import oberije_lung_survival
 
 app = FastAPI()
 
 def get_model():
     """
-    If the model is specified in /app/model.json, load the model from the file. Otherwise, return the oberije_lung_survival object.
+    Get the model object based on the environment variables.
+
+    Returns:
+    - instance: the model object
     """
-    if os.path.exists("/app/model.json"):
-        return logistic_regression(model_path="/app/model.json")
-    return oberije_lung_survival()
+    module_name = os.environ.get("MODULE_NAME")
+    class_name = os.environ.get("CLASS_NAME")
+
+    # import the module
+    module = __import__(module_name)
+    class_ = getattr(module, class_name)
+    instance = class_()
+    return instance
 
 @app.get("/")
 def read_root():

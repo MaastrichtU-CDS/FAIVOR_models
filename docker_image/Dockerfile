@@ -5,7 +5,6 @@ WORKDIR /app
 
 COPY main.py /app/main.py
 COPY model_execution.py /app/model_execution.py
-COPY oberije_2014_lung_survival.py /app/oberije_2014_lung_survival.py
 
 RUN pip install fastapi uvicorn
 
