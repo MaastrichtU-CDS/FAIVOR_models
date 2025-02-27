@@ -1,5 +1,5 @@
 {
-    "name": "PEG tube feeding",
+    "model_name": "PEG tube feeding",
     "model_uri": "https://www.predictcancer.ai/Main.php?page=TFDInfo",
     "full_model_name": "Prediction model for tube feeding dependency during chemoradiotherapy for at least four weeks in head and neck cancer patients",
     "intercept": -0.506,
@@ -36,13 +36,20 @@
             "description": "Body mass index",
             "type": "numerical",
             "code": "Z68",
-            "terminology": "ICD10CM"
+            "terminology": "ICD10CM",
+            "min": 5,
+            "max": 40,
+            "unit": "kg/m2"
+
         },
         "WeightLoss": {
             "description": "Weight change finding",
             "type": "numerical",
             "code": "365921005",
-            "terminology": "SNOMEDCT"
+            "terminology": "SNOMEDCT",
+            "min": -30,
+            "max": 30,
+            "unit": "%"
         },
         "TF": {
             "description": "Texture modified diet or tube feeding",
@@ -62,50 +69,81 @@
             "values": {
                 "373803006": 0,
                 "373804000": 1,
-                "373805004": 1,
-                "373806003": 1,
-                "373807007": 1
+                "373805004": 2,
+                "373806003": 3,
+                "373807007": 4
             }
         },
         "Tumorlocation": {
-            "description": "Tumor location",
+            "description": "Tumor location (Head finding)",
             "type": "categorical",
-            "code": "C182223",
-            "terminology": "NCI_Thesaurus",
-            "values": 0
+            "code": "406122000",
+            "terminology": "SNOMEDCT",
+            "values": {
+                "235075007": 1,
+                "232388008": 2,
+                "74409009": 3,
+                "126809003": 4,
+                "126686005": 5,
+                "126692004": 6,
+                "406122000": 7,
+                "Other": 8
+            }
         },
         "Tclassification": {
-            "description": "Tumor stage finding",
+            "description": "Generic Primary Tumor TNM Finding",
             "type": "categorical",
-            "code": "385356007",
-            "terminology": "SNOMEDCT",
-            "values": 0
+            "code": "C48885",
+            "terminology": "ROO",
+            "values": {
+                "C48719": 0,
+                "C48720": 1,
+                "C48724": 2,
+                "C48728": 3,
+                "C48732": 4,
+                "C48737": "x"
+            }
         },
         "Nclassification": {
-            "description": "N - Regional lymph node stage",
+            "description": "Generic Regional Lymph Nodes TNM Finding",
             "type": "categorical",
-            "code": "260767000",
-            "terminology": "SNOMEDCT",
-            "values": 0
+            "code": "C48884",
+            "terminology": "ROO",
+            "values": {
+                "C48705": 0,
+                "C48706": 1,
+                "C48786": 2,
+                "C48714": 3,
+                "C48718": "x"
+            }
         },
         "Systherapy": {
             "description": "Systemic Therapy",
             "type": "categorical",
             "code": "C15698",
             "terminology": "NCI_Thesaurus",
-            "values": 0
+            "values": {
+                "C173291": 1,
+                "C92991": 0
+            }
         },
         "RTdose_subman": {
             "description": "Mean Radiation Dose on contralateral submandibular gland [Gy]",
             "type": "numerical",
             "code": "C190594",
-            "terminology": "NCI_Thesaurus"
+            "terminology": "NCI_Thesaurus",
+            "min": 0,
+            "max": 60,
+            "unit": "Gy"
         },
         "RTdosesalivary": {
             "description": "Mean Radiation Dose contralateral parotid salivary gland [Gy]",
             "type": "numerical",
             "code": "C190594",
-            "terminology": "NCI_Thesaurus"
+            "terminology": "NCI_Thesaurus",
+            "min": 0,
+            "max": 60,
+            "unit": "Gy"
         }
     },
     "Description": "Model for predicting the prophylactic gastronomy insertion (tube feeding) for at least four weeks in head and neck cancer patients undergoing chemoradiotherapy",

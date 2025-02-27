@@ -30,9 +30,10 @@ if len(sys.argv) == 4:
     class_name = sys.argv[3]
 
 module_name = python_file.replace('.py', '')
-
+# python:3.8
 dockerfile = f"""
-FROM python:3.8
+FROM jvsoest/base_fairmodels
+LABEL org.opencontainers.image.source=https://github.com/maastrichtu-cds/faivor_models
 WORKDIR /app
 COPY {python_file} /app/{python_file}
 COPY requirements.txt /app/
