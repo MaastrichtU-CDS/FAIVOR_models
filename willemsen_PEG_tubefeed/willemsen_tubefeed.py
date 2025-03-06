@@ -1591,8 +1591,8 @@ if __name__ == "__main__":
             "TF": '1',
             "PS": '0',
             "Tumorlocation": '1',
-            "Tclassification": '1',
-            "Nclassification": '1',
+            "Tclassification": '2',
+            "Nclassification": '2',
             "Systherapy": '0',
             "RTdose_subman": 36,
             "RTdosesalivary": 29

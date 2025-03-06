@@ -1,0 +1,11 @@
+{
+    "model_type": "logistic_regression",
+    "model_uri": "https://v2.fairmodels.org/instance/3f400afb-df5e-4798-ad50-0687dd439d9b",
+    "model_name": "Stiphout pCR prediction - clinical parameters",
+    "intercept": -0.6,
+    "covariate_weights": {
+        "cT": -0.074,
+        "cN": -0.060,
+        "tLength": -0.085
+    }
+}
