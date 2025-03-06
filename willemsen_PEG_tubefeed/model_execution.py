@@ -1,6 +1,7 @@
 import json
 from math import exp
 
+
 class model_execution:
     def get_model_metadata(self):
         return {
@@ -50,13 +51,30 @@ class model_execution:
         """
 
         # Preprocess the input data
-        input_object = self._preprocess(input_object)
+        try:
+            input_object = self._preprocess(input_object)
+            # Calculate the probability
+            if isinstance(input_object, dict):
+                return self._calculate_probability_single(input_object)
+            elif isinstance(input_object, list):
+                return [self._calculate_probability_single(item) for item in input_object]
 
-        # Calculate the probability
-        if isinstance(input_object, dict):
-            return self._calculate_probability_single(input_object)
-        elif isinstance(input_object, list):
-            return [self._calculate_probability_single(item) for item in input_object]
+
+        except ValueError as e:  # Handle specific errors
+
+            return {"error": f"Validation error: {str(e)}"}
+
+
+        except TypeError as e:
+
+            return {"error": f"Type error: {str(e)}"}
+
+
+        except Exception as e:  # Catch all unexpected errors
+
+            return {"error": f"Unexpected error: {str(e)}"}
+
+
 
 
 class logistic_regression(model_execution):
@@ -95,7 +113,7 @@ class logistic_regression(model_execution):
 
         linear_predictor = self._model_parameters['intercept']
         for covariate, weight in self._model_parameters['covariate_weights'].items():
-            print(float(input_object[covariate]))
+            #print(float(input_object[covariate]))
             linear_predictor += float(weight) * float(input_object[covariate])
 
         # Calculate the probability
