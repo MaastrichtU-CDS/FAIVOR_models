@@ -34,20 +34,23 @@ class willemsen_tubefeed(logistic_regression):
     def __init__(self):
         #with open('willemsen_tubefeed.json') as f:
         self._model_parameters = {
-    #Part of metadata that is only inside the docker container
-    "intercept": -0.506,
-    "covariate_weights": {
-        "BMI": -0.042,
-        "WeightLoss": -0.03,
-        "TF": 0.452,
-        "PS": 0.608,
-        "Tumorlocation": -0.51,
-        "Tclassification": 0.311,
-        "Nclassification": 0.561,
-        "Systherapy": -0.655,
-        "RTdose_subman": 0.015,
-        "RTdosesalivary": 0.042
-    }}
+            "model_uri": "https://v2.fairmodels.org/instance/813a319b-0dca-4365-86be-fc7cca52c497",
+            "model_name": "Model for predicting the prophylactic gastronomy insertion (tube feeding)",
+            #Part of metadata that is only inside the docker container
+            "intercept": -0.506,
+            "covariate_weights": {
+                "BMI": -0.042,
+                "WeightLoss": -0.03,
+                "TF": 0.452,
+                "PS": 0.608,
+                "Tumorlocation": -0.51,
+                "Tclassification": 0.311,
+                "Nclassification": 0.561,
+                "Systherapy": -0.655,
+                "RTdose_subman": 0.015,
+                "RTdosesalivary": 0.042
+            }
+        }
 
     #Part of metadata that could be fetched from faifmodels.org -> f
 #     "model_name": "PEG tube feeding",
