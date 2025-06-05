@@ -5,7 +5,7 @@ To pull the image: docker pull ghcr.io/maastrichtu-cds/faivor_models/willemsen_t
 
 To run the container: docker run --rm -p 8000:8000 jvsoest/willemsen_tubefeed (see https://github.com/MaastrichtU-BISS/FAIRmodels-model-package/tree/main )
 
-To predict: curl -X POST http://localhos"Content-Type: application/json" -d '{"BMI": 19.5, "WeightLoss": -8, "TF": "1", "PS": "0", "Tumorlocation": "1", "Tclassification": "2", "Nclassification": "2", "Systherapy": "0", "RTdose_subman": 36, "RTdosesalivary": 29}'
+To predict: curl -X POST http://localhost:8000/predict -H "Content-Type: application/json" -d '{"BMI": 19.5, "WeightLoss": -8, "TF": "1", "PS": "0", "Tumorlocation": "1", "Tclassification": "2", "Nclassification": "2", "Systherapy": "0", "RTdose_subman": 36, "RTdosesalivary": 29}'
 
 An predicted value for this example: 0.81562756196222
 
