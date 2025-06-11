@@ -1,0 +1,14 @@
+{
+    "model_type": "linear_regression",
+    "model_uri": "...",
+    "model_name": "Normal tissue complication probability (NTCP) profiles - dysphagia",
+    "intercept": -4.05,
+    "covariate_weights": {
+        "Dmean_Oral_cavity": 0.03,
+        "Dmean_PCM_superior": 0.02,
+        "Dmean_PCM_medium": 0.01,
+	"Dmean_PCM_inferior": 0.01,
+	"Tumor_location": 1,
+	"Baseline_dysphagia": 1
+    }
+}
