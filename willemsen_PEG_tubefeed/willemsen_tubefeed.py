@@ -1,7 +1,6 @@
 from math import log, exp
 from model_execution import logistic_regression
 import json
-from fastapi import HTTPException
 
 
 def get_range(metadata, feature):
@@ -16,19 +15,67 @@ def get_range(metadata, feature):
     max_value = float(entry.get("Maximum - for numerical", {}).get("@value", "0"))
 
     return min_value, max_value
+
 def get_categorical_values(metadata, description_value):
-    # Find the entry where "Description" matches the given value
-    category_entry = next((entry for entry in metadata.get("Input data", [])
-                           if isinstance(entry, dict) and entry.get("Description", {}).get("@value") == description_value), None)
-    categories = category_entry.get("Categories", [])  # Get the Categories list
-    categories_id= [category.get("Identification for category used in model", {}).get("@value")
-        for category in categories
-        if isinstance(category, dict)]
+    """
+    Extract category values and convert numeric strings to numbers when applicable.
+    """
+    # Locate matching input entry by Description
+    category_entry = next(
+        (entry for entry in metadata.get("Input data", [])
+         if isinstance(entry, dict) and entry.get("Description", {}).get("@value") == description_value),
+        None
+    )
 
-    if not categories_id:
-        return None  # Return None if no matching entry is found
+    if not category_entry:
+        return None
 
-    return categories_id
+    categories = category_entry.get("Categories", [])
+    values = []
+
+    for category in categories:
+        if not isinstance(category, dict):
+            continue
+
+        raw_value = category.get("Identification for category used in model", {}).get("@value")
+
+        if raw_value is None:
+            continue
+
+        # ✅ Convert numbers stored as strings to actual numeric values
+        if isinstance(raw_value, str):
+            try:
+                # First try integer
+                numeric_value = int(raw_value)
+                values.append(numeric_value)
+                continue
+            except ValueError:
+                try:
+                    # Then try float
+                    numeric_value = float(raw_value)
+                    values.append(numeric_value)
+                    continue
+                except ValueError:
+                    # Keep as string if conversion fails
+                    pass
+
+        values.append(raw_value)
+
+    return values if values else None
+
+# def get_categorical_values(metadata, description_value):
+#     # Find the entry where "Description" matches the given value
+#     category_entry = next((entry for entry in metadata.get("Input data", [])
+#                            if isinstance(entry, dict) and entry.get("Description", {}).get("@value") == description_value), None)
+#     categories = category_entry.get("Categories", [])  # Get the Categories list
+#     categories_id= [category.get("Identification for category used in model", {}).get("@value")
+#         for category in categories
+#         if isinstance(category, dict)]
+#
+#     if not categories_id:
+#         return None  # Return None if no matching entry is found
+#
+#     return categories_id
 
 class willemsen_tubefeed(logistic_regression):
     def __init__(self):
@@ -1591,12 +1638,12 @@ if __name__ == "__main__":
         {
             "BMI": 19.5,
             "WeightLoss": -8,
-            "TF": '1',
-            "PS": '0',
-            "Tumorlocation": '1',
-            "Tclassification": '2',
-            "Nclassification": '2',
-            "Systherapy": '0',
+            "TF": 1,
+            "PS": 0,
+            "Tumorlocation": 1,
+            "Tclassification": 2,
+            "Nclassification": 2,
+            "Systherapy": 0,
             "RTdose_subman": 36,
             "RTdosesalivary": 29
         }
