@@ -30,14 +30,14 @@ jobs:
       - name: login GitHub container registry
         run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       
-      # - name: build stiphout clinical
-      #   run: |
-      #     cd stiphout_pCR-Clinical
-      #     fm-build stiphout_pCR_Clinical.json ghcr.io/${{ steps.repo_name.outputs.lowercase }}/stiphout_pcr_clinical
-      #     docker push ghcr.io/${{ steps.repo_name.outputs.lowercase }}/stiphout_pcr_clinical
-      
-      - name: build willemsen
+      - name: build stiphout clinical
         run: |
-          cd willemsen_PEG_tubefeed
-          fm-build willemsen_tubefeed.py ghcr.io/${{ steps.repo_name.outputs.lowercase }}/willemsen_tubefeed
-          docker push ghcr.io/${{ steps.repo_name.outputs.lowercase }}/willemsen_tubefeed
+          cd stiphout_pCR-Clinical
+          fm-build stiphout_pCR_Clinical.json ghcr.io/${{ steps.repo_name.outputs.lowercase }}/stiphout_pcr_clinical
+          docker push ghcr.io/${{ steps.repo_name.outputs.lowercase }}/stiphout_pcr_clinical
+      
+      # - name: build willemsen
+      #   run: |
+      #     cd willemsen_PEG_tubefeed
+      #     fm-build willemsen_tubefeed.py ghcr.io/${{ steps.repo_name.outputs.lowercase }}/willemsen_tubefeed
+      #     docker push ghcr.io/${{ steps.repo_name.outputs.lowercase }}/willemsen_tubefeed
