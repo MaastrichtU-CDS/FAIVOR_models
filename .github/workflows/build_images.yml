@@ -35,6 +35,7 @@ jobs:
           cd stiphout_pCR-Clinical
           fm-build stiphout_pCR_Clinical.json ghcr.io/${{ steps.repo_name.outputs.lowercase }}/stiphout_pcr_clinical
           docker push ghcr.io/${{ steps.repo_name.outputs.lowercase }}/stiphout_pcr_clinical
+
       
       # - name: build willemsen
       #   run: |
