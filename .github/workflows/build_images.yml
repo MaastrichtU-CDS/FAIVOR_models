@@ -26,7 +26,6 @@ jobs:
       - name: install FAIRmodel package
         run: |
           pip install git+https://github.com/MaastrichtU-BISS/FAIRmodels-model-package.git@error_catch#subdirectory=package
-      
 
       - name: login GitHub container registry
         run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
