@@ -1,66 +1,95 @@
 from model_execution import logistic_regression
-
-def get_range(metadata, feature):
-    # Find the entry where "Description" has value "BMI"
-    entry = next((entry for entry in metadata["Input data"] if entry.get("Description", {}).get("@value") == feature), None)
-
-    if not entry:
-        return None, None  # Return None if BMI entry is not found
-
-    # Extract min and max values
-    min_value = float(entry.get("Minimum - for numerical", {}).get("@value", "0"))
-    max_value = float(entry.get("Maximum - for numerical", {}).get("@value", "0"))
-
-    return min_value, max_value
-def get_categorical_values(metadata, description_value):
-    # Find the entry where "Description" matches the given value
-    category_entry = next((entry for entry in metadata.get("Input data", [])
-                           if isinstance(entry, dict) and entry.get("Description", {}).get("@value") == description_value), None)
-    categories = category_entry.get("Categories", [])  # Get the Categories list
-    categories_id= [category.get("Identification for category used in model", {}).get("@value")
-        for category in categories
-        if isinstance(category, dict)]
-
-    if not categories_id:
-        return None  # Return None if no matching entry is found
-
-    return categories_id
+from typing import Tuple, Any, Dict, List, Optional
 
 
-def validate_numerical_feature(data, feature, min_value, max_value):
+def get_range(metadata: Dict[str, Any], feature: str) -> Tuple[float, float]:
     """
-    Validates a numerical feature in a dictionary or list of dictionaries.
-
-    Parameters:
-    - data: dict or list of dicts containing the input data
-    - feature: str, the name of the feature to validate
-    - min_value: float, minimum allowed value
-    - max_value: float, maximum allowed value
+    Return (min_value, max_value) for a numerical feature from metadata.
 
     Raises:
-    - ValueError if the feature is missing or out of range
-    - TypeError if the feature is not a number
+    - ValueError if the feature is not found or min/max cannot be parsed to float.
     """
+    # Find the entry where "Description" "@value" equals the feature name
+    entry = next(
+        (entry for entry in metadata.get("Input data", []) if entry.get("Description", {}).get("@value") == feature),
+        None,
+    )
 
-    if isinstance(data, list):
-        for i in range(len(data)):
-            if feature not in data[i]:
-                raise ValueError(f"Missing {feature} in item {i}")
-            if not isinstance(data[i][feature], (int, float)):
-                raise TypeError(f"Invalid {feature} type in item {i}, expected a number")
-            if not (min_value <= data[i][feature] <= max_value):
-                raise ValueError(
-                    f"Invalid {feature} value in item {i}: {data[i][feature]} (Allowed range: {min_value}-{max_value})")
+    if not entry:
+        raise ValueError(f"No range metadata found for feature '{feature}'")
 
-    else:
-        if feature not in data:
-            raise ValueError(f"Missing {feature}")
-        if not isinstance(data[feature], (int, float)):
-            raise TypeError(f"Invalid {feature} type, expected a number")
-        if not (min_value <= data[feature] <= max_value):
-            raise ValueError(f"Invalid {feature} value: {data[feature]} (Allowed range: {min_value}-{max_value})")
+    try:
+        min_value = float(entry.get("Minimum - for numerical", {}).get("@value", "0"))
+        max_value = float(entry.get("Maximum - for numerical", {}).get("@value", "0"))
+    except (TypeError, ValueError) as e:
+        raise ValueError(f"Invalid min/max values for feature '{feature}': {e}")
 
-    return True
+    return min_value, max_value
+
+
+def get_categorical_values(metadata: Dict[str, Any], description_value: str):
+    """
+    Return a list of category identifications for a categorical feature description.
+    Returns None if no matching entry or no categories found.
+    """
+    category_entry = next(
+        (entry for entry in metadata.get("Input data", []) if isinstance(entry, dict) and entry.get("Description", {}).get("@value") == description_value),
+        None,
+    )
+    if not category_entry:
+        return None
+
+    categories = category_entry.get("Categories", [])
+    categories_id = [
+        category.get("Identification for category used in model", {}).get("@value")
+        for category in categories
+        if isinstance(category, dict)
+    ]
+
+    return categories_id or None
+
+
+def validate_numerical_feature(data: Any, feature: str, min_value: float, max_value: float) -> bool:
+  """
+  Validates a numerical feature in a dictionary or list of dictionaries.
+
+  Parameters:
+  - data: dict or list of dicts containing the input data
+  - feature: str, the name of the feature to validate
+  - min_value: float, minimum allowed value (must not be None)
+  - max_value: float, maximum allowed value (must not be None)
+
+  Raises:
+  - ValueError if the feature is missing or out of range
+  - TypeError if the feature is not a number (rejects bools)
+  """
+  # Guard against missing range bounds
+  if min_value is None or max_value is None:
+    raise ValueError(f"Allowed range for feature '{feature}' is not available")
+
+  def _check_value(val: Any, idx: Optional[int] = None):
+    label = f"item {idx}" if idx is not None else "object"
+    # Reject booleans explicitly: isinstance(True, int) == True, so check bool first
+    if isinstance(val, bool) or not isinstance(val, (int, float)):
+      raise TypeError(f"Invalid {feature} type in {label}, expected a number")
+    if not (min_value <= val <= max_value):
+      raise ValueError(f"Invalid {feature} value in {label}: {val} (Allowed range: {min_value}-{max_value})")
+
+  if isinstance(data, list):
+    for i, item in enumerate(data):
+      if not isinstance(item, dict):
+        raise TypeError(f"Invalid input at item {i}: expected a dict")
+      if feature not in item:
+        raise ValueError(f"Missing {feature} in item {i}")
+      _check_value(item[feature], i)
+  else:
+    if not isinstance(data, dict):
+      raise TypeError("Input data must be a dict or list of dicts")
+    if feature not in data:
+      raise ValueError(f"Missing {feature}")
+    _check_value(data[feature], None)
+
+  return True
 
 class stiphout_pCR_Clinical(logistic_regression):
     def __init__(self):
@@ -516,12 +545,12 @@ class stiphout_pCR_Clinical(logistic_regression):
         }
         # check numerical data
         # Tumor length
-        feature="tLength"
+        feature = "tLength"
         min_f, max_f = get_range(f, feature)
-        validate_numerical_feature(data,feature,min_f,max_f)
+        validate_numerical_feature(data, feature, min_f, max_f)
 
         # Generic Primary Tumor TNM Finding (T stage)
-        feature="cT"
+        feature = "cT"
         min_f, max_f = get_range(f, feature)
         validate_numerical_feature(data, feature, min_f, max_f)
 
@@ -537,7 +566,7 @@ if __name__ == "__main__":
     model_obj.get_input_parameters()
     print(model_obj.predict(
         {
-            "cT": 3,
+            "cT": 4,
             "cN": 1,
             "tLength": 15
         }
