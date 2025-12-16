@@ -81,13 +81,16 @@ def validate_numerical_feature(data: Any, feature: str, min_value: float, max_va
         raise TypeError(f"Invalid input at item {i}: expected a dict")
       if feature not in item:
         raise ValueError(f"Missing {feature} in item {i}")
-      _check_value(item[feature], i)
+      # safe get, avoid raising KeyError
+      val = item.get(feature)
+      _check_value(val, i)
   else:
     if not isinstance(data, dict):
       raise TypeError("Input data must be a dict or list of dicts")
     if feature not in data:
       raise ValueError(f"Missing {feature}")
-    _check_value(data[feature], None)
+    val = data.get(feature)
+    _check_value(val, None)
 
   return True
 
